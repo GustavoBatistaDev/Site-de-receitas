@@ -2,18 +2,17 @@
 
 
 
-{% block 'title'%} detail{% endblock %}
+{% block 'title'%} {{recipe.title}} {% endblock %}
  
 {% block 'content'%}
-    <main class="main-content-container">
-        <div class="main-content main-content-detail container">
-            {% include 'recipes/partials/recipe.html'%}
 
-            <h1>hello, eu herdei de base</h1>
-            
-        
-        </div> 
-    </main>
+    <div class="main-content main-content-detail container">
+        {% include 'recipes/partials/recipe.html'%}
+
+       
+    
+    </div> 
+
 
 {% endblock%}
 

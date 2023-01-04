@@ -2,17 +2,21 @@
 
 {% block 'title'%} Home{% endblock %}
 {% block 'content'%}
-<main class="main-content-container">
+
     <div class="main-content main-content-list container">
-        {% include 'recipes/partials/recipe.html'%}
-        {% include 'recipes/partials/recipe.html'%}
-        {% include 'recipes/partials/recipe.html'%}
-        {% include 'recipes/partials/recipe.html'%}
-        {% include 'recipes/partials/recipe.html'%}
+
+        {% for recipe in recipes %}
+            {% include 'recipes/partials/recipe.html'%}
+
+        {% empty %}
+            <div class="center" style="margin-bottom: 550px;">
+                <h1>There are no recipes here!</h1>
+            </div>
+        {% endfor %}
         
         
     
     </div>
-</main>
+
 
 {% endblock%}

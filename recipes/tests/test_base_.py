@@ -10,11 +10,11 @@ class TestBase(TestCase):
 
     def make_author(
         self,
-        first_name='Name_test',
-        last_name='last_name_test',
+        first_name='Nametest',
+        last_name='lastnametest',
         username='usernametest',
-        password='password@test',
-        email='email@test'
+        password='82079879Ab',
+        email='email@test.com'
     ):
 
         return User.objects.create_user(
@@ -26,38 +26,39 @@ class TestBase(TestCase):
         )
 
     def make_recipe(
-        self,
-        category_data=None,
-        author_data=None,
-        title='titletest',
-        description='descriptiontest',
-        slug='slug-test',
-        preparation_time=10,
-        preparation_time_unit='testminutes',
-        servings=5,
-        servings_unit='testservingsunit',
-        preparation_steps='preparationstepstest',
-        preparation_steps_is_html=False,
-        is_published=True,
-    ):
+            self,
+            category_data=None,
+            author_data=None,
+            title='titletest',
+            description='Recipe Description',
+            slug='recipe-slug',
+            preparation_time=10,
+            preparation_time_unit='Minutos',
+            servings=5,
+            servings_unit='Porções',
+            preparation_steps='Recipe Preparation Steps',
+            preparation_steps_is_html=False,
+            is_published=True,
+        ):
+        
 
-        if category_data is None:
-            category_data = {}
+            if category_data is None:
+                category_data = {}
 
-        elif author_data is None:
-            author_data = {}
+            if author_data is None:
+                author_data = {}
 
-        return Recipe.objects.create(
+            return Recipe.objects.create(
                 category=self.make_category(**category_data),
                 author=self.make_author(**author_data),
-                title='titletest',
-                description='descriptiontest',
-                slug='slug-test',
-                preparation_time=10,
-                preparation_time_unit='testminutes',
-                servings=5,
-                servings_unit='testservingsunit',
-                preparation_steps='preparationstepstest',
-                preparation_steps_is_html=False,
-                is_published=True,
+                title=title,
+                description=description,
+                slug=slug,
+                preparation_time=preparation_time,
+                preparation_time_unit=preparation_time_unit,
+                servings=servings,
+                servings_unit=servings_unit,
+                preparation_steps=preparation_steps,
+                preparation_steps_is_html=preparation_steps_is_html,
+                is_published=is_published,
             )

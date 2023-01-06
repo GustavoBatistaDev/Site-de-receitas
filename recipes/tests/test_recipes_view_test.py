@@ -35,6 +35,16 @@ class RecipeViewsTest(TestBase):
         response = self.client.get(reverse('recipes:home'))
         content = response.content.decode('utf-8')
         self.assertIn('titletest', content)
+
+    def test_recipe_home_if_is_published_is_false(self):
+
+        # testing if is_published is correct
+        self.make_recipe(is_published=False, title='not recipe match')
+        response = self.client.get(reverse('recipes:home'))
+        self.assertIn(
+            'There are no recipes here!',
+            response.content.decode('utf-8')
+            )
     
     # end_tests_home
 
@@ -52,7 +62,7 @@ class RecipeViewsTest(TestBase):
 
     def test_view_category_loads_template_correct(self):
         
-        self.make_recipe()
+        self.make_recipe(category_data={'name': 'teste_se_entendi'})
         response = self.client.get(reverse('recipes:category', kwargs={'id': 1}))
         self.assertTemplateUsed(response, 'recipes/pages/category.html')
 
@@ -65,6 +75,12 @@ class RecipeViewsTest(TestBase):
     def test_view_category_404_not_found_if_not_category(self):
          
         response = self.client.get(reverse('recipes:category', kwargs={'id': 1}))
+        self.assertEqual(response.status_code, 404)
+
+    def test_view_category_is_published_is_false_one(self):
+
+        self.make_recipe(is_published=False)
+        response = self.client.get(reverse('recipes:category', kwargs={'id':1}))
         self.assertEqual(response.status_code, 404)
 
     # end_tests_category
@@ -96,7 +112,6 @@ class RecipeViewsTest(TestBase):
     def test_title_in_content_in_view_recipe(self):
         self.make_recipe()
         response = self.client.get(reverse('recipes:recipe', kwargs={'id': 1}))
-        content = response.content.decode()
 
         self.assertEqual(response.status_code, 200)
 
@@ -105,3 +120,10 @@ class RecipeViewsTest(TestBase):
         self.make_recipe()
         response = self.client.get(reverse('recipes:recipe', kwargs={'id': 1}))
         self.assertTemplateUsed(response, 'recipes/pages/recipe-view.html')
+
+
+    def test_view_recipe_detail_is_published_is_false(self):
+
+        self.make_recipe(is_published=False)
+        response = self.client.get(reverse('recipes:recipe', kwargs={'id':1}))
+        self.assertEqual(response.status_code, 404)

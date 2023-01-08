@@ -1,11 +1,15 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
 from django.http import HttpResponse, HttpRequest
 from .models import Recipe
+from django.http import Http404
+from django.db.models import Q
 
 
 def home(request: HttpRequest) -> HttpResponse:
     recipes = Recipe.objects.filter(is_published=True).order_by('-id')
-    return render(request, 'recipes/pages/home.html', context={'recipes': recipes}) #
+    return render(
+        request, 'recipes/pages/home.html', context={'recipes': recipes}
+        )
 
 
 def recipe(request: HttpRequest, id: int) -> HttpResponse:
@@ -25,7 +29,29 @@ def category(request: HttpRequest, id: int) -> HttpResponse:
 
     category_name = recipes[0].category.name
     
-    return render(request, 'recipes/pages/category.html', context={
-                                                        'recipes': recipes,
-                                                        'category': category_name,
-                                                        })
+    return render(
+        request, 'recipes/pages/category.html', context={
+                'recipes': recipes,
+                'category': category_name,
+                })
+
+
+def search(request):
+    search_termo = request.GET.get('search', '').strip()
+
+    if not search_termo:
+        raise Http404()
+
+    recipes = Recipe.objects.filter(
+        Q(
+            Q(title__icontains=search_termo) |
+            Q(description__icontains=search_termo),
+            is_published=True
+        )
+    ).order_by('-id')
+
+    return render(
+        request, 'recipes/pages/search.html',
+
+        {'page_title': f'Termo | "{search_termo}"', 'recipes': recipes}
+        )

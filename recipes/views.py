@@ -3,23 +3,28 @@ from django.http import HttpResponse, HttpRequest
 from .models import Recipe
 from django.http import Http404
 from django.db.models import Q
-from django.core.paginator import Paginator
+from utils.pagination import make_pagination
+from django.http import QueryDict
 
 
 def home(request: HttpRequest) -> HttpResponse:
-    recipes = Recipe.objects.filter(is_published=True).order_by('-id')
+    recipes: QueryDict = Recipe.objects.filter(is_published=True).order_by('-id')  # noqa: E501
 
-    current_page = request.GET.get('page', 1)
-    paginator = Paginator(recipes, 1)
-    page_obj = paginator.get_page(current_page)
+    page_obj, pagination_range = make_pagination(
+            request=request,
+            query_set=recipes,
+            per_page=1,
+            qty_pages=4
+
+    )
 
     return render(
-        request, 'recipes/pages/home.html', context={'recipes': page_obj}
+        request, 'recipes/pages/home.html', context={'recipes': page_obj, 'pagination_range': pagination_range}  # noqa: E501
         )
 
 
 def recipe(request: HttpRequest, id: int) -> HttpResponse:
-    recipe = get_object_or_404(Recipe, id=id, is_published=True)
+    recipe: Recipe = get_object_or_404(Recipe, id=id, is_published=True)
     return render(request, 'recipes/pages/recipe-view.html', context={
             'recipe': recipe,
             'is_detail_page': True
@@ -28,16 +33,24 @@ def recipe(request: HttpRequest, id: int) -> HttpResponse:
 
 def category(request: HttpRequest, id: int) -> HttpResponse:
 
-    recipes = get_list_or_404(Recipe.objects.filter(
+    recipes: list = get_list_or_404(Recipe.objects.filter(
             is_published=True,
             category__id=id).order_by('-id'),
             )
 
     category_name = recipes[0].category.name
+    page_obj, pagination_range = make_pagination(
+        request=request,
+        query_set=recipes,
+        per_page=1,
+        qty_pages=4
+
+    )
     
     return render(
         request, 'recipes/pages/category.html', context={
-                'recipes': recipes,
+                'recipes': page_obj,
+                'pagination_range': pagination_range,
                 'category': category_name,
                 })
 
@@ -48,7 +61,7 @@ def search(request: HttpRequest) -> HttpResponse:
     if not search_termo:
         raise Http404()
 
-    recipes = Recipe.objects.filter(
+    recipes: QueryDict = Recipe.objects.filter(
         Q(
             Q(title__icontains=search_termo) |
             Q(description__icontains=search_termo),
@@ -56,8 +69,19 @@ def search(request: HttpRequest) -> HttpResponse:
         )
     ).order_by('-id')
 
-    return render(
-        request, 'recipes/pages/search.html',
+    page_obj, pagination_range = make_pagination(
+        request=request,
+        query_set=recipes,
+        per_page=2,
+        qty_pages=4
 
-        {'page_title': f'Termo | "{search_termo}"', 'recipes': recipes}
-        )
+    )
+
+    return render(
+        request, 'recipes/pages/search.html', {
+            'page_title': f'Termo | "{search_termo}"',
+            'recipes': page_obj,
+            'pagination_range': pagination_range,
+            'adittional_url_query': f'&search={search_termo}'
+        }
+    )

@@ -46,12 +46,11 @@ class RecipeViewHomeTest(TestBase):
             'There are no recipes here!',
             response.content.decode('utf-8')
             )
+
     @patch('recipes.views.PER_PAGE', new=6)
     def test_recipe_pagination(self):
         for i in range(18):
             u = {'slug': f'r{i}', 'author_data': {'username': f'u{i}'}}
-                
-            
             self.make_recipe(**u)
         response = self.client.get(reverse('recipes:home'))
         recipes = response.context['recipes']

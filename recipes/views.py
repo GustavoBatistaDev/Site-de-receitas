@@ -5,17 +5,21 @@ from django.http import Http404
 from django.db.models import Q
 from utils.pagination import make_pagination
 from django.http import QueryDict
+import os
+from django.core.paginator import Paginator
+
+
+PER_PAGE = os.environ.get('PER_PAGE', '2')
 
 
 def home(request: HttpRequest) -> HttpResponse:
     recipes: QueryDict = Recipe.objects.filter(is_published=True).order_by('-id')  # noqa: E501
-
+    
     page_obj, pagination_range = make_pagination(
             request=request,
             query_set=recipes,
-            per_page=1,
+            per_page=PER_PAGE,
             qty_pages=4
-
     )
 
     return render(
@@ -42,7 +46,7 @@ def category(request: HttpRequest, id: int) -> HttpResponse:
     page_obj, pagination_range = make_pagination(
         request=request,
         query_set=recipes,
-        per_page=1,
+        per_page=PER_PAGE,
         qty_pages=4
 
     )
@@ -72,10 +76,11 @@ def search(request: HttpRequest) -> HttpResponse:
     page_obj, pagination_range = make_pagination(
         request=request,
         query_set=recipes,
-        per_page=2,
+        per_page=PER_PAGE,
         qty_pages=4
 
     )
+    print(str(page_obj))
 
     return render(
         request, 'recipes/pages/search.html', {

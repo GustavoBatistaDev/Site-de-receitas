@@ -33,7 +33,7 @@ def make_pagination_range(page_range: list, qty_pages: int, current_page: int) -
     }
 
 
-def make_pagination(request: HttpRequest, qty_pages: int, query_set: QueryDict, per_page: int) -> tuple:  # noqa? E501
+def make_pagination(request: HttpRequest, qty_pages: int, query_set: QueryDict, per_page: str) -> tuple:  # noqa? E501
     try:
         current_page = int(request.GET.get('page', 1))
     except ValueError:

@@ -1,6 +1,7 @@
 from unittest import TestCase
 from pagination import make_pagination_range
 from recipes.tests.test_base_ import TestBase
+from django.urls import reverse, resolve
 
 
 class PaginationTest(TestCase):
@@ -99,9 +100,36 @@ class PaginationTest(TestCase):
 
 
 class TestPaginationCorrect(TestBase):
-    def test_pages(self):
-        self.assertEqual(1, 1)
+    def setUp(self):
+        
+        self.make_recipe(
+            title='recipe1', slug='recipe-slug-1', author_data={'username': 'gustav1'}  # noqa: E501
+        )
 
+        self.make_recipe(
+            title='recipe2', slug='recipe-slug-2', author_data={'username': 'gustav2'}  # noqa: E501
+
+        )
+        self.make_recipe(
+            title='recipe3', slug='recipe-slug-3', author_data={'username': 'gustav3'}  # noqa: E501
+
+        )
+
+        return super().setUp()
+
+    def test_pages_in_view_home(self):
+        response = self.client.get(f'{reverse("recipes:home")}?page=1')  # noqa: E501       
+        content = response.content.decode('utf-8')
+        self.assertNotIn('recipe1', content)
+
+    def test_pages_in_view_search(self):
+        response = self.client.get(f'{reverse("recipes:search")}?page=1&search=e')  # noqa: E501       
+        content = response.content.decode('utf-8')
+        self.assertNotIn('recipe1', content)
+
+    # escrever o teste em que testa se a paginacao da view categoria esta funcionando
+    def test_pages_in_view_category(self):
+        ...
 
 
 

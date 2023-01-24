@@ -91,3 +91,4 @@ def search(request: HttpRequest) -> HttpResponse:
             'adittional_url_query': f'&search={search_termo}'
         }
     )
+

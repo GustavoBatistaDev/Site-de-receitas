@@ -7,6 +7,12 @@
   <div class="main-content center container">
     <h2>Register</h2>
   </div>
+  {% include 'global/messages.html' %}
+  {%if form.errors %}
+    <div class="main-content center container message-error-form">
+      <p>Por favor, corrija o formulario abaixo!</p>
+    </div>
+  {% endif %}
 
   <div class="main-content container">
     <form action="{% url 'authors:create' %}" method='POST'>{% csrf_token %}
@@ -15,9 +21,6 @@
                 <div class="form-group">
                   <label for="{{field.id_for_label}}">{{field.label}}</label>
                   {{field}}
-                  {% if field.help_text%}
-                      <p class="help-text">{{field.help_text}}</p>
-                  {% endif%}
 
                   {{field.errors}}
 

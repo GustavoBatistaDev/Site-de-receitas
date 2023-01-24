@@ -325,6 +325,14 @@
   background: var(--color-error-light);
   color: var(--color-error-dark);
 }
+.message-error-form {
+  border: 1px solid var(--color-error-dark);
+  background: var(--color-error-light);
+  color: var(--color-error-dark);
+  width: 30%;
+  padding: 10px ;
+  border-radius: 4px;
+}
 
 .message-success {
   border: 1px solid var(--color-success-dark);
@@ -409,3 +417,4 @@
   background: var(--color-primary-dark);
   color: var(--color-white);
 }
+

@@ -1,0 +1,11 @@
+{% if messages%}
+  <div class="main-content center container widthmessage" style="width:44%">
+    {% for message in messages%}
+        <div class="message {{message.tags}} message-container">
+           <p> {{message}}</p>
+        </div>
+      {% endfor %}
+  </div>
+
+{% endif %}
+

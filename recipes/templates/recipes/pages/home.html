@@ -3,18 +3,7 @@
 {% block 'title'%} Home{% endblock %}
 {% block 'content'%}
 
-{% if messages%}
-  <div class="main-content center container">
-    {% for message in messages%}
-        <div class="message {{message.tags}} message-container">
-            {{message}}
-        </div>
-      {% endfor %}
-  </div>
-
-{% endif %}
-
-
+{% include 'global/messages.html'%}
     <div class="main-content main-content-list container">
 
         {% for recipe in recipes %}

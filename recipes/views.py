@@ -6,8 +6,6 @@ from django.db.models import Q
 from utils.pagination import make_pagination
 from django.http import QueryDict
 import os
-from django.contrib import messages
-from django.contrib.messages import constants
 
 
 PER_PAGE = os.environ.get('PER_PAGE', '2')

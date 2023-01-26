@@ -3,8 +3,7 @@ from recipes.models import Category, Recipe
 from django.contrib.auth.models import User
 
 
-class TestBase(TestCase):
-
+class RecipeMixin:
     def make_category(self, name: str = 'categoria_test'):
         return Category.objects.create(name=name)
 
@@ -61,3 +60,18 @@ class TestBase(TestCase):
             preparation_steps_is_html=preparation_steps_is_html,
             is_published=is_published,
         )
+    
+    def make_recipe_in_batch(self, qtd=10):
+        recipes = []
+        for i in range(qtd):
+            u = {'slug': f'r{i}', 'author_data': {'username': f'u{i}'}, 'title': f'Recipe Title{i}'}  # noqa
+            recipe = self.make_recipe(**u)
+            recipes.append(recipe)
+        return recipes
+
+
+class TestBase(TestCase, RecipeMixin):
+    def setUp(self) -> None:
+        return super().setUp()
+
+   

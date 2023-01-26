@@ -1,3 +1,9 @@
+{%if form.errors %}
+  <div class="main-content center container message-error-form">
+    <p>Por favor, corrija o formulario abaixo!</p>
+  </div>
+{% endif %}
+
 {% if messages%}
   <div class="main-content center container widthmessage" style="width:44%">
     {% for message in messages%}

@@ -1,0 +1,34 @@
+{%extends 'global/base.html'%}
+
+{% block 'title'%}Login | {% endblock %}
+
+{% block 'content'%}
+
+  <div class="main-content center container">
+    <h2>Login</h2>
+    {% if request.user.is_authenticated %}
+      <div class="logout">
+        Your are logged in with {{request.user.username}}.<br>
+       Click here to logout
+     
+       <form action="{% url 'authors:logout'%}" method="post">{% csrf_token%}
+         <button class="plain-text-buttom" type="submit">click here</button>
+         <input type="hidden" name="username" value="{{request.user.email}}">
+       </form>
+      </div>
+       
+     
+      
+    {% endif %}
+  </div>
+  {% include 'global/messages.html' %}
+  {%if form.errors %}
+    <div class="main-content center container message-error-form">
+      <p>Por favor, corrija o formulario abaixo!</p>
+    </div>
+  {% endif %}
+
+  {% include 'global/partials/form.html'%}
+
+{% endblock%}
+  

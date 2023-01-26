@@ -83,7 +83,13 @@ class AuthorRegisterFormIntegrationTest(DjangoTestCase):
 
     # implementar teste se o usuário é cadastrado se o form for valido
     def test_whether_the_data_sent_correctly_will_be_saved(self):
-        pass
+        url = reverse('authors:create')
+        response = self.client.post(
+            url, data=self.form_data, follow=True
+        )
+
+        msg = 'Your user is created, please log in.'
+        self.assertIn(msg, response.content.decode('utf-8'))
 
     def test_passoword_field_have_lower_upper_case_letters_and_numbers(self):
         self.form_data['password'] = '82077877'
@@ -91,6 +97,7 @@ class AuthorRegisterFormIntegrationTest(DjangoTestCase):
         response = self.client.post(
             url, data=self.form_data, follow=True
         )
+
         msg = 'Password must be 8 characters long, including uppercase and lowercase letters.'  # noqa
         self.assertIn(msg, response.content.decode('utf-8'))
         
@@ -130,3 +137,21 @@ class AuthorRegisterFormIntegrationTest(DjangoTestCase):
 
         response = self.client.post(url, data=self.form_data, follow=True)  
         self.assertIn('User email is already in use.', response.content.decode('utf-8'))  # noqa
+
+    def test_author_created_can_login(self):
+        url = reverse('authors:create')
+        self.form_data.update({
+            "username": "testuser",
+            'password': '82077877Ab',
+            'password2': '82077877Ab'
+        })
+        self.client.post(url, data=self.form_data, follow=True)
+
+        is_authenticated = self.client.login(
+            username='testuser',
+            password='82077877Ab'
+        )
+
+        self.assertTrue(
+            is_authenticated
+        )

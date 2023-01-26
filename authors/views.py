@@ -1,9 +1,12 @@
 from django.shortcuts import render
-from .forms import RegisterForm
+from .forms import RegisterForm, LoginForm
 from django.http import Http404, HttpResponse, HttpRequest
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.urls import reverse
+from django.http import QueryDict
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 
 def register_view(request: HttpRequest) -> HttpResponse:
@@ -20,7 +23,7 @@ def register_create(request: HttpRequest) -> HttpResponse:
     if not request.POST:
         raise Http404()
 
-    POST = request.POST
+    POST: QueryDict = request.POST
     request.session['register_form_data'] = POST
     form = RegisterForm(POST)
 
@@ -30,5 +33,46 @@ def register_create(request: HttpRequest) -> HttpResponse:
         user.save()
         messages.success(request, 'Your user is created, please log in.')
         del(request.session['register_form_data']) # noqa
+        return redirect(reverse('authors:login_view'))
     return redirect('authors:register')
 
+
+def login_view(request: HttpRequest) -> HttpResponse:
+    form = LoginForm()
+    return render(request, 'authors/pages/login.html', {'form': form, 'form_action': reverse('authors:login_create')})  # noqa:E501
+
+
+def login_create(request: HttpRequest) -> HttpResponse:
+    if request.method != 'POST':
+        raise Http404()
+
+    url = reverse('authors:login_view')
+    form = LoginForm(request.POST)
+    if form.is_valid():
+        authenticated_user = authenticate(
+            username=form.cleaned_data.get('username', ''),
+            password=form.cleaned_data.get('password', ''),
+        )
+        
+        if authenticated_user is not None:
+            messages.success(request, 'You are logged in.')
+            login(request, authenticated_user)
+            return redirect(url)
+
+        messages.error(request, 'invalid credentials.') 
+        return redirect(url)
+
+    messages.error(request, 'Invalid username or password. ')
+    return redirect(url)
+
+
+@login_required(login_url='authors:login_view')
+def logout_view(request: HttpRequest) -> HttpResponse:
+    if request.method != 'POST':
+        return redirect(reverse('authors:login_view'))
+
+    #if request.POST.get('username') != request.user.username:
+       # return redirect(reverse('authors:login_view'))
+
+    logout(request)
+    return redirect(reverse('authors:login_view'))

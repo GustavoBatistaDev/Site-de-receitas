@@ -57,7 +57,7 @@ def login_create(request: HttpRequest) -> HttpResponse:
         if authenticated_user is not None:
             messages.success(request, 'You are logged in.')
             login(request, authenticated_user)
-            return redirect(url)
+            return redirect('authors:dashboard')
 
         messages.error(request, 'invalid credentials.') 
         return redirect(url)
@@ -69,10 +69,18 @@ def login_create(request: HttpRequest) -> HttpResponse:
 @login_required(login_url='authors:login_view')
 def logout_view(request: HttpRequest) -> HttpResponse:
     if request.method != 'POST':
+        messages.error(request, 'Click to logout button')
         return redirect(reverse('authors:login_view'))
 
-    #if request.POST.get('username') != request.user.username:
-       # return redirect(reverse('authors:login_view'))
+    if request.POST.get('username') != request.user.username:
+        messages.error(request, 'Invalid logout user.')
+        return redirect(reverse('authors:login_view'))
 
     logout(request)
+    messages.success(request, 'Logout successfully.')
     return redirect(reverse('authors:login_view'))
+
+
+@login_required(login_url='authors:login_view')
+def dashboard(request: HttpRequest) -> HttpResponse:
+    return render(request, 'authors/pages/dashboard.html')  # noqa:E501

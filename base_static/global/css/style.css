@@ -441,3 +441,7 @@
   width:100% ;
   text-align: center;
 }
+
+.login-message{
+  margin: 2rem;
+}

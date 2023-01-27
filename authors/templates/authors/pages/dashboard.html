@@ -1,0 +1,16 @@
+{%extends 'global/base.html'%}
+
+{% block 'title'%}Dashboard ({{request.user.username}})| {% endblock %}
+
+{% block 'content'%}
+
+  <div class="main-content center container">
+    <h2>Dashboard de {{request.user.username}}</h2>
+    {% include 'authors/partials/login_message.html'%}
+  </div>
+  {% include 'global/messages.html' %}
+
+
+
+{% endblock%}
+  

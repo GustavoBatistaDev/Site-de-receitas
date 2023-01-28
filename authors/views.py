@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from recipes.models import Recipe
 from authors.forms.recipe_form import AuthorRecipeForm
+from unidecode import unidecode
 
 
 def register_view(request: HttpRequest) -> HttpResponse:
@@ -122,7 +123,7 @@ def dashboard_recipe_edit(request: HttpRequest, id: int) -> HttpResponse:
 
         recipe.save()
         messages.success(request, 'Your recipe has been successfully saved')
-        return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': id}))
+        return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': id}))  # noqa
     return render(
         request,
         'authors/pages/dashboard_recipe.html',
@@ -131,3 +132,31 @@ def dashboard_recipe_edit(request: HttpRequest, id: int) -> HttpResponse:
        
         )  # noqa:E501
 
+
+@login_required(login_url='authors:login_view')
+def dashboard_create_recipe(request: HttpRequest) -> HttpResponse:
+    form = AuthorRecipeForm(
+        data=request.POST or None,
+        files=request.FILES or None,
+    )
+
+    if form.is_valid():
+        recipe = form.save(commit=False)
+
+        recipe.author = request.user
+        recipe.preparation_steps_is_html = False
+        recipe.is_published = False
+        slug = ''
+        for i in recipe.title:
+            slug += i + '-'
+
+        recipe.slug = slug
+        recipe.save()
+        messages.success(request, 'Your recipe has been successfully saved')
+        return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': recipe.id}))  # noqa
+
+    return render(
+        request,
+        'authors/pages/dashboard_create_recipe.html', 
+        context={'form': form}   
+    )  # noqa:E501

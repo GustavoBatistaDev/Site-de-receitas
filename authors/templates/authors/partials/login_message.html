@@ -1,12 +1,13 @@
 {% if request.user.is_authenticated %}
     <div class="login-message" class="logout">
       Your are logged in with {{request.user.username}}.<br>
-    Click here to logout 
+    Click here to logout <br>
 
       <form action="{% url 'authors:logout'%}" method="post">{% csrf_token%}
         <button class="plain-text-buttom" type="submit">click here</button>
         <input type="hidden" name="username" value="{{request.user.username}}">
       </form>
-      <a href="{%url 'authors:dashboard'%}">Click see your recipes</a>
+      <a href="{%url 'authors:dashboard'%}">Click see your recipes,</a>
+      <a href="{% url 'authors:dashboard_create'%}">Create new recipe</a>
     </div>      
 {% endif %}

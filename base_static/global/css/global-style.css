@@ -1,0 +1,14 @@
+.authors-dashboard-container{
+  max-width: 64rem;
+  padding: var(--spacing-gutter-medium);
+  margin: 0 auto;
+  text-align: left;
+
+}
+
+.authors-dashboard-container h3,
+.authors-dashboard-container p,
+.authors-dashboard-container ul {
+  list-style-type: none;
+  margin: 1rem 0;
+}

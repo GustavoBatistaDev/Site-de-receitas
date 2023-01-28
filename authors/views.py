@@ -7,6 +7,8 @@ from django.urls import reverse
 from django.http import QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from recipes.models import Recipe
+from authors.forms.recipe_form import AuthorRecipeForm
 
 
 def register_view(request: HttpRequest) -> HttpResponse:
@@ -83,4 +85,49 @@ def logout_view(request: HttpRequest) -> HttpResponse:
 
 @login_required(login_url='authors:login_view')
 def dashboard(request: HttpRequest) -> HttpResponse:
-    return render(request, 'authors/pages/dashboard.html')  # noqa:E501
+    recipes = Recipe.objects.filter(
+        is_published=False,
+        author=request.user
+    )
+    return render(
+        request,
+        'authors/pages/dashboard.html',
+        context={'recipes': recipes}
+        )  # noqa:E501
+
+
+@login_required(login_url='authors:login_view')
+def dashboard_recipe_edit(request: HttpRequest, id: int) -> HttpResponse:
+    recipe = Recipe.objects.filter(
+        is_published=False,
+        author=request.user,
+        pk=id
+    ).first()
+
+    if not recipe:
+        raise Http404()
+
+    form = AuthorRecipeForm(
+        data=request.POST or None,
+        files=request.FILES or None,
+        instance=recipe
+
+    )
+    if form.is_valid():
+        recipe = form.save(commit=False)
+
+        recipe.author = request.user
+        recipe.preparation_steps_is_html = False
+        recipe.is_published = False
+
+        recipe.save()
+        messages.success(request, 'Your recipe has been successfully saved')
+        return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': id}))
+    return render(
+        request,
+        'authors/pages/dashboard_recipe.html',
+        context={'form': form}
+
+       
+        )  # noqa:E501
+

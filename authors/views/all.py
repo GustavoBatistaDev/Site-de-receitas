@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .forms import RegisterForm, LoginForm
+from authors.forms import RegisterForm, LoginForm
 from django.http import Http404, HttpResponse, HttpRequest
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from recipes.models import Recipe
 from authors.forms.recipe_form import AuthorRecipeForm
+from authors.decorators import no_login_required
 
 
 def register_view(request: HttpRequest) -> HttpResponse:
@@ -39,6 +40,7 @@ def register_create(request: HttpRequest) -> HttpResponse:
     return redirect('authors:register')
 
 
+@no_login_required
 def login_view(request: HttpRequest) -> HttpResponse:
     form = LoginForm()
     return render(request, 'authors/pages/login.html', {'form': form, 'form_action': reverse('authors:login_create')})  # noqa:E501
@@ -141,15 +143,9 @@ def dashboard_create_recipe(request: HttpRequest) -> HttpResponse:
 
     if form.is_valid():
         recipe = form.save(commit=False)
-
         recipe.author = request.user
         recipe.preparation_steps_is_html = False
         recipe.is_published = False
-        slug = ''
-        for i in recipe.title:
-            slug += i + '-'
-
-        recipe.slug = slug
         recipe.save()
         messages.success(request, 'Your recipe has been successfully saved')
         return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': recipe.id}))  # noqa

@@ -30,8 +30,6 @@ class AuthorLogoutTest(TestCase):
             data={'username': 'anotherUser'}
             )
 
-        print(response)
-
         self.assertIn(
             'Invalid logout user.', response.content.decode('utf-8')
             )

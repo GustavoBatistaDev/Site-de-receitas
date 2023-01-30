@@ -46,10 +46,10 @@ class AuthorsLogintest(AuthorsBaseTest):
 
         # selecionando input username
         username_field = self.browser.find_element(By.NAME, 'username')
-        #selecionando input password
+        #  selecionando input password
         password_field = self.browser.find_element(By.NAME, 'password')
 
-        # digitando dados inválidos
+        #  digitando dados inválidos
         username_field.send_keys('    ')
         password_field.send_keys('    ')
         button = self.browser.find_element(By.ID, 'button-login')
@@ -81,4 +81,10 @@ class AuthorsLogintest(AuthorsBaseTest):
 
         self.assertIn('invalid credentials.', body.text)
 
+
+    # implementar teste do decorator
+    #def test_no_login_required(self):
+
+    #    self.client.login
+    #    self.browser.get(self.live_server_url+ reverse('authors:login_view')) # noqa
     

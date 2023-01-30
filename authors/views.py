@@ -9,7 +9,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from recipes.models import Recipe
 from authors.forms.recipe_form import AuthorRecipeForm
-from unidecode import unidecode
 
 
 def register_view(request: HttpRequest) -> HttpResponse:
@@ -160,3 +159,30 @@ def dashboard_create_recipe(request: HttpRequest) -> HttpResponse:
         'authors/pages/dashboard_create_recipe.html', 
         context={'form': form}   
     )  # noqa:E501
+
+
+@login_required(login_url='authors:login_view')
+def dashboard_recipe_delete(request: HttpRequest, id: int) -> HttpResponse:
+    # code by gustav batista
+    match request.method:
+        case 'GET':
+            raise Http404()
+
+    recipe: Recipe = Recipe.objects.filter(
+        is_published=False,
+        author=request.user,
+        pk=id
+    ).first()
+
+    match recipe.author:
+        case request.user:
+            recipe.delete()
+            messages.success(request, 'Your recipe has been successfully deleted')
+            return redirect(reverse('authors:dashboard'))
+        case _:
+            messages.error(request, 'This recipe is not yours.')
+
+
+
+
+

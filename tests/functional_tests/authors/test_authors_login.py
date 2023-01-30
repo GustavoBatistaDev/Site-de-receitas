@@ -60,7 +60,6 @@ class AuthorsLogintest(AuthorsBaseTest):
 
         self.assertIn('Invalid username or password.', body.text)
 
-    
     def test_if_message_invalid_credentials_appears(self):
 
         # fazendo a requisição para a pagina de login
@@ -68,7 +67,7 @@ class AuthorsLogintest(AuthorsBaseTest):
 
         # selecionando input username
         username_field = self.browser.find_element(By.NAME, 'username')
-        #selecionando input password
+        #  selecionando input password
         password_field = self.browser.find_element(By.NAME, 'password')
 
         # digitando dados inválidos

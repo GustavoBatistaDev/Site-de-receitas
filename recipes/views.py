@@ -79,7 +79,6 @@ def search(request: HttpRequest) -> HttpResponse:
         qty_pages=4
 
     )
-    print(str(page_obj))
 
     return render(
         request, 'recipes/pages/search.html', {

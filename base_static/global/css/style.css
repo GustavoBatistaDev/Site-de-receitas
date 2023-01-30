@@ -463,3 +463,23 @@ img{
 .left{
   text-align: left;
 }
+
+.inline-info{
+  display: flex;
+  margin-left: 13px;
+}
+
+.inline-button{
+  margin-left: 10%;
+  background-color: var(--color-gray-1);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  color: red;
+
+}
+
+.lado-oposto{
+  display: block;
+  margin-left: 30px;
+}

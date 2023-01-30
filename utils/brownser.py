@@ -16,7 +16,7 @@ def make_chrome_browser(*options):
         for option in options:
             chrome_options.add_argument(option)
 
-    chrome_service = Service(executable_path=CHROME_DRIVER_PATH)  # flake8: noqa
+    chrome_service = Service(executable_path=CHROME_DRIVER_PATH)  # flake8:noqa
     browser = webdriver.Chrome(service=chrome_service, options=chrome_options)
     return browser
 

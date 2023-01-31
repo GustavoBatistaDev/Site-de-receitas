@@ -11,7 +11,7 @@ from authors.forms.recipe_form import AuthorRecipeForm
 from authors.decorators import no_login_required
 
 
-class DashBoardRecipe(View):
+class DashBoardRecipeEdit(View):
     def get_recipe(self, id):
         recipe = None
 
@@ -51,7 +51,6 @@ class DashBoardRecipe(View):
             instance=recipe
         )
 
-
         if form.is_valid():
             recipe = form.save(commit=False)
             recipe.author = request.user
@@ -64,3 +63,25 @@ class DashBoardRecipe(View):
             return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': id}))  # noqa
         
         return self.render_recipe(form)
+
+
+class DashBoardRecipeCreate(View):
+    def get(self, request):
+        form = AuthorRecipeForm()
+        return render(request, 'authors/pages/dashboard_create_recipe.html', context={'form': form})  # noqa
+
+    def post(self, request):
+        form = AuthorRecipeForm(
+            data=request.POST or None,
+            files=request.FILES or None,
+        )
+
+        if form.is_valid():
+            recipe = form.save(commit=False)
+            recipe.author = request.user
+            recipe.preparation_steps_is_html = False
+            recipe.is_published = False
+            recipe.save()
+            messages.success(request, 'Your recipe has been successfully saved')
+            return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': recipe.id}))  # noqa
+        return render(request, 'authors/pages/dashboard_create_recipe.html', context={'form': form}) # noqa

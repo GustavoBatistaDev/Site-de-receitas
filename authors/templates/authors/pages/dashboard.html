@@ -7,6 +7,7 @@
   <div class="main-content center container">
     <h2>Dashboard de {{request.user.username}}</h2>
     {% include 'authors/partials/login_message.html'%}
+    {% include 'global/messages.html' %}
 
     <div class="authors-dashboard-container">
       <h3>Your recipes</h3>
@@ -35,7 +36,7 @@
       </ul>
     </div>
   </div>
-  {% include 'global/messages.html' %}
+
 
 
 

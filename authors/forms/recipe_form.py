@@ -50,7 +50,7 @@ class AuthorRecipeForm(forms.ModelForm):
     def clean(self):
         cd = self.cleaned_data
 
-        title = cd.get('title')
+        title = cd.get('title', '')
         description = cd.get('description')
 
         if title == description:

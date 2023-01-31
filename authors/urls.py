@@ -11,10 +11,10 @@ urlpatterns = [
     path('login/create/', views.login_create, name='login_create'),
     path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('dashboard/<int:id>/edit/', views.DashBoardRecipe.as_view(), name='dashboard_recipe_edit'),  # noqa
+    path('dashboard/<int:id>/edit/', views.DashBoardRecipeEdit.as_view(), name='dashboard_recipe_edit'),  # noqa
     path(
         'dashboard/create/',
-        views.dashboard_create_recipe,
+        views.DashBoardRecipeCreate.as_view(),
         name='dashboard_create'
     ),
     path(

@@ -6,9 +6,42 @@ from django.db.models import Q
 from utils.pagination import make_pagination
 from django.http import QueryDict
 import os
+from django.views.generic.list import ListView
 
 
-PER_PAGE = os.environ.get('PER_PAGE', '2')
+PER_PAGE = '2'
+
+
+class RecipeListViewBase(ListView):
+    model = Recipe
+    context_object_name = 'recipes'
+    paginate_by = None
+    ordering = ['-id']
+    template_name = 'recipes/pages/home.html'
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.filter(is_published=True)
+        return qs
+    
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        page_obj, pagination_range = make_pagination(
+            request=self.request,
+            query_set=context.get('recipes'),
+            per_page=PER_PAGE,
+            qty_pages=4
+ 
+        )
+        context.update(
+            {'recipes': page_obj,
+             'pagination_range': pagination_range}
+            )
+        return context
+    
+
+class Home(RecipeListViewBase):
+    template_name = 'recipes/pages/home.html'
 
 
 def home(request: HttpRequest) -> HttpResponse:

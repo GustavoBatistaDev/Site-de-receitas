@@ -9,14 +9,21 @@ from django.contrib.auth.decorators import login_required
 from recipes.models import Recipe
 from authors.forms.recipe_form import AuthorRecipeForm
 from authors.decorators import no_login_required
+from django.utils.decorators import method_decorator
+from django.http import HttpRequest, HttpResponse
+from django.forms import ModelForm
 
 
+@method_decorator(
+        login_required(login_url='authors:login'),
+        name='dispatch'
+        )
 class DashBoardRecipeEdit(View):
-    def get_recipe(self, id):
-        recipe = None
+    def get_recipe(self, id: int) -> Recipe:
+        recipe: None = None
 
         if id:
-            recipe = Recipe.objects.filter(
+            recipe: QueryDict = Recipe.objects.filter(  # noqa
                     is_published=False,
                     author=self.request.user,
                     pk=id
@@ -26,26 +33,24 @@ class DashBoardRecipeEdit(View):
                 raise Http404()
         return recipe
     
-    def render_recipe(self, form):
+    def render_recipe(self, form: ModelForm) -> HttpResponse:
         return render(
                 self.request,
                 'authors/pages/dashboard_recipe.html',
                 context={'form': form}
-
-        
             )  
-    
-    def get(self, request, id):
+
+    def get(self, request: HttpRequest, id: int) -> HttpResponse:
         recipe = self.get_recipe(id)
     
-        form = AuthorRecipeForm(instance=recipe)
+        form: AuthorRecipeForm = AuthorRecipeForm(instance=recipe)
        
         return self.render_recipe(form)
     
-    def post(self, request, id):
-        recipe = self.get_recipe(id)
+    def post(self, request: HttpRequest, id: int) -> HttpResponse:
+        recipe: QueryDict = self.get_recipe(id)
     
-        form = AuthorRecipeForm(
+        form: AuthorRecipeForm = AuthorRecipeForm(
             data=request.POST or None,
             files=request.FILES or None,
             instance=recipe
@@ -65,13 +70,13 @@ class DashBoardRecipeEdit(View):
         return self.render_recipe(form)
 
 
-class DashBoardRecipeCreate(View):
+class DashBoardRecipeCreate(DashBoardRecipeEdit):
     def get(self, request):
-        form = AuthorRecipeForm()
-        return render(request, 'authors/pages/dashboard_create_recipe.html', context={'form': form})  # noqa
+        form: AuthorRecipeForm = AuthorRecipeForm()
+        return self.render_recipe(form=form)  # noqa
 
     def post(self, request):
-        form = AuthorRecipeForm(
+        form: AuthorRecipeForm = AuthorRecipeForm(
             data=request.POST or None,
             files=request.FILES or None,
         )
@@ -84,4 +89,16 @@ class DashBoardRecipeCreate(View):
             recipe.save()
             messages.success(request, 'Your recipe has been successfully saved')
             return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': recipe.id}))  # noqa
-        return render(request, 'authors/pages/dashboard_create_recipe.html', context={'form': form}) # noqa
+        return self.render_recipe(form)
+    
+
+@method_decorator(
+    login_required(login_url='authors:login', redirect_field_name='next'),
+    name='dispatch'
+)
+class DashboardRecipeDelete(View):
+    def post(self, request, id):
+        recipe = Recipe.objects.get(id=id)
+        recipe.delete()
+        messages.success(request, 'Deleted successfully.')
+        return redirect(reverse('authors:dashboard'))

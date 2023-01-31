@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from recipes.models import Recipe
 from authors.forms.recipe_form import AuthorRecipeForm
 from authors.decorators import no_login_required
+from utils.unique_slug import verify_slug
 
 
 def register_view(request: HttpRequest) -> HttpResponse:

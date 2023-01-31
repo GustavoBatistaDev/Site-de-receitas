@@ -13,6 +13,8 @@ from authors.decorators import no_login_required
 
 class DashBoardRecipe(View):
     def get_recipe(self, id):
+        recipe = None
+
         if id:
             recipe = Recipe.objects.filter(
                     is_published=False,
@@ -26,20 +28,20 @@ class DashBoardRecipe(View):
     
     def render_recipe(self, form):
         return render(
-            self.request,
-            'authors/pages/dashboard_recipe.html',
-            context={'form': form}
+                self.request,
+                'authors/pages/dashboard_recipe.html',
+                context={'form': form}
 
         
-            ) 
-
+            )  
+    
     def get(self, request, id):
         recipe = self.get_recipe(id)
     
         form = AuthorRecipeForm(instance=recipe)
-        
+       
         return self.render_recipe(form)
-
+    
     def post(self, request, id):
         recipe = self.get_recipe(id)
     
@@ -48,6 +50,7 @@ class DashBoardRecipe(View):
             files=request.FILES or None,
             instance=recipe
         )
+
 
         if form.is_valid():
             recipe = form.save(commit=False)
@@ -58,5 +61,6 @@ class DashBoardRecipe(View):
             recipe.save()
             messages.success(request, 'Your recipe has been successfully saved')
            
-            return self.render_recipe(form)
+            return redirect(reverse('authors:dashboard_recipe_edit', kwargs={'id': id}))  # noqa
         
+        return self.render_recipe(form)

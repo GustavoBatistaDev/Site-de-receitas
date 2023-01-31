@@ -80,15 +80,7 @@ class AuthorRecipeForm(forms.ModelForm):
             self._my_errors['servings'].append('servings must be a number integer')
 
         return servings
-    
-    def clean_title(self):
-        title = self.cleaned_data.get('title')
-        recipe_title = Recipe.objects.filter(title=title)
-        if recipe_title:
-            self._my_errors['title'].append('This title already exists, try another one.')
 
-        return title
-        
 
             
 

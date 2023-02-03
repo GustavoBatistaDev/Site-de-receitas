@@ -18,18 +18,26 @@
 
     <div class="recipe-author">
         
-        {%if recipe.author is not None%}
-            <span class="recipe-author-item">
-                <i class="fas fa-user"></i>
+        {% if recipe.author is not None %}
+        <span class="recipe-author-item">
 
-                {% if recipe.first_name%}
-                    {{recipe.author.first_name}} {{recipe.author.last_name}}
-                {% else%}
-                    {{recipe.author.username}}
+            {% if recipe.author.profile %}
+                <a href="{% url 'authors:profile' recipe.author.profile.id %}">
+            {% endif %}
 
-                {% endif %}
-            </span>
-        {% endif %}
+            <i class="fas fa-user"></i>
+            {% if recipe.author.first_name %}
+                {{ recipe.author.first_name }} {{ recipe.author.last_name }}
+            {% else %}
+                {{ recipe.author.username }}
+            {% endif %}
+
+            {% if recipe.author.profile %}
+                </a>
+            {% endif %}
+
+        </span>
+    {% endif %}
         <span class="recipe-author-item">
             <i class="fas fa-calendar-alt"></i>
             {{recipe.created_at|date:"d/m/Y"}} ás {{recipe.created_at|date:"H:i:s"}}
@@ -78,8 +86,20 @@
             
             {{ recipe.preparation_steps|linebreaksbr }}
         
-        </div>
+        </div style="margin-bottom: 240px">
     {% endif %}
+
+    {% if recipe.tags.all %}
+    <p>
+        Tags:
+        {% for tag in recipe.tags.all %}
+            <a href="{% url 'recipes:tag' tag.slug %}">
+                {{ tag.name }}
+            </a>, 
+        {% endfor %}
+    </p>
+{% endif %}
+  
 </div>
 
 

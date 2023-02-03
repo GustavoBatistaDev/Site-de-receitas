@@ -1,6 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from django.contrib.contenttypes.fields import GenericRelation
+from tag.models import Tag
+from collections import defaultdict
+from django.core.exceptions import ValidationError
 
 
 class Category(models.Model):
@@ -30,7 +34,8 @@ class Recipe(models.Model):
         Category, on_delete=models.SET_NULL, null=True, default=None
         )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    
+    tags = GenericRelation(Tag, related_query_name='recipes')
+
     def __str__(self):
         return self.title
     
@@ -40,3 +45,17 @@ class Recipe(models.Model):
             self.slug = slug
 
         return super().save(*args, **kwargs)
+    
+    def clean(self, *args, **kwargs):
+        errors = defaultdict(list)
+
+        recipe_from_db = Recipe.objects.filter(
+            title__iexact=self.title
+
+        ).first()
+
+        if recipe_from_db.id != self.id:
+            errors['title'].append('This title is already in use.')
+
+        if errors:
+            raise ValidationError('This title is already in use.')
